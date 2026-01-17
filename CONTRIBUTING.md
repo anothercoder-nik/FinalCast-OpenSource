@@ -135,7 +135,7 @@ Harassment or toxic behavior will not be tolerated.
 
 ## 🌲 Branching Strategy
 
-- main → stable
+- master → stable
 - feature/* → new features
 - fix/* → bug fixes
 
