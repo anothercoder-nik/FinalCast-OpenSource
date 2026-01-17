@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Download, Eye, FileVideo, Clock, User, Calendar } from 'lucide-react';
 import { getParticipantRecordings, getSessionRecordings, generateDownloadUrl } from '../../api/session.api.js';
+import {Skeleton} from "../ui/skeleton.jsx";
 
 export default function RecordingsList({ participantId }) {
   const [recordings, setRecordings] = useState({});
@@ -71,7 +72,22 @@ export default function RecordingsList({ participantId }) {
 
   const formatDuration = (s) => `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, '0')}`;
 
-  if (loading) return <div className="text-center py-8 text-gray-500">Loading recordings...</div>;
+  if (loading){
+    return (
+      <div className="w-screen h-screen flex justify-center items-start p-10">
+        <div className="space-y-6 w-full max-w-4xl">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="grid grid-cols-4 gap-4 items-center">
+              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full" />
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
   if (error) return <div className="text-center py-8 text-red-500">{error}</div>;
 
   const allRecs = Object.values(recordings).flat();
