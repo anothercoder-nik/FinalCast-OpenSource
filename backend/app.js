@@ -47,14 +47,23 @@ app.use(passport.initialize());
 // ------------------ CORS ------------------
 const allowedOrigins = [
   process.env.FRONTEND_URL,
-  'http://localhost:3000',
-  'http://localhost:5173',
-];
+  ...(process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : []),
+]
+  .map((origin) => origin?.trim())
+  .filter(Boolean);
+
+// specific development adds
+if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
+  allowedOrigins.push('http://localhost:3000', 'http://localhost:5173');
+}
+
+// deduplicate
+const uniqueAllowedOrigins = new Set(allowedOrigins);
 
 const isAllowedOrigin = (origin) => {
   if (!origin) return true;
   return (
-    allowedOrigins.includes(origin) ||
+    uniqueAllowedOrigins.has(origin) ||
     origin.endsWith('.onrender.com') ||
     origin.endsWith('.vercel.app') ||
     origin.endsWith('.netlify.app')
