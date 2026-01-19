@@ -3,7 +3,7 @@
   <h1>🎙️ FinalCast</h1>
   
   <h3>Not Just Record — Record. Render. Release.</h3>
-  FinalCast is an open-source, full-stack podcasting and video conversation platform built with the **MERN stack**, **WebRTC**, and **FFmpeg** — designed to provide    creators with a **fully rendered video** after every session, without needing to manually edit timeline chunks.
+  <p><i>FinalCast is an open-source, full-stack podcasting and video conversation platform built with the MERN stack, WebRTC, and FFmpeg — designed to provide creators with a fully rendered video after every session, without needing to manually edit timeline chunks.</i></p>
 
 
 ---
