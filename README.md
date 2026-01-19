@@ -2,9 +2,10 @@
 
   <h1>🎙️ FinalCast</h1>
   
-  <h3>Record. Render. Release.</h3>
-  <p><i>The open-source, browser-based broadcasting studio that handles the heavy lifting for you.</i></p>
+  <h3>Not Just Record — Record. Render. Release.</h3>
+  <p><i>FinalCast is an open-source, full-stack podcasting and video conversation platform built with the <h3>MERN stack</h3>, <h3>WebRTC</h3>, and <h3>FFmpeg</h3> — designed to provide creators with a <h3>fully rendered video</h3> after every session, without needing to manually edit timeline chunks.</i></p>
 
+---
   <p>
     <a href="#-tech-stack">Tech Stack</a> •
     <a href="#-core-features">Features</a> •
