@@ -71,9 +71,9 @@ By leveraging **WebRTC** for real-time interaction and **FFmpeg** for server-sid
 | **📁 Smart Storage** | Multipart uploads to **AWS S3** with robust failure recovery. |
 | **🎼 Dynamic Layouts** | Auto-adjusting video grids that adapt as participants join. |
 | **🔐 Secure Access** | `OAuth2` Google login and `JWT` session management. |
-| **📡Peer-to-peer** media exchange with fallback signaling. |
-| **🎙️ Multi-participant** auto layout (dynamic tiling) |
-| **🪄 Visual Timeline Editor** (drag-and-drop layout)| 
+| **📡Peer-to-peer** | Peer-to=peer media exchange with fallback signaling. |
+| **🎙️ Multi-participant** |  Auto layout (dynamic tiling) |
+| **🪄 Visual Timeline Editor** |  Drag-and-drop layout available. | 
 
 ---
 
