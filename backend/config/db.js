@@ -3,15 +3,18 @@ import mongoose from 'mongoose';
 
 const connectDB = async () => {
   try {
+    const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URL;
+    
+    if (!mongoUri) {
+      throw new Error('MongoDB URI not found in environment variables');
+    }
   
-    const conn = await mongoose.connect(process.env.MONGO_URL, {
-      // These options are deprecated in Mongoose 7+, but OK to keep for older versions
+    const conn = await mongoose.connect(mongoUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
 
     console.log(`MongoDB Connected: ${conn.connection.host}`);
-    console.log(process.env.MONGO_URL);
   } catch (error) {
     console.error(`Error: ${error.message}`);
     process.exit(1);

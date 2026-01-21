@@ -12,8 +12,12 @@ import { fileURLToPath } from 'url';
 
 import connectDB from './config/db.js';
 import './config/passport.js';
+import { validateEnvironment, securityHeaders } from './config/security.js';
 import { attachuser } from './utils/attachUser.js';
 import { setupSocketHandlers } from './socket/socketHandlers.js';
+
+// Validate environment variables on startup
+validateEnvironment();
 
 // Routes
 import authRoutes from './routes/authRoutes.js';
@@ -36,6 +40,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ------------------ MIDDLEWARE ------------------
+app.use(securityHeaders);
 app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
@@ -52,31 +57,46 @@ const allowedOrigins = [
   .map((origin) => origin?.trim())
   .filter(Boolean);
 
-// specific development adds
-if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
+// Only add development origins in development mode
+if (process.env.NODE_ENV === 'development') {
   allowedOrigins.push('http://localhost:3000', 'http://localhost:5173');
 }
 
-// deduplicate
 const uniqueAllowedOrigins = new Set(allowedOrigins);
 
 const isAllowedOrigin = (origin) => {
-  if (!origin) return true;
-  return (
-    uniqueAllowedOrigins.has(origin) ||
-    origin.endsWith('.onrender.com') ||
-    origin.endsWith('.vercel.app') ||
-    origin.endsWith('.netlify.app')
-  );
+  // Allow same-origin requests (no origin header)
+  if (!origin) return process.env.NODE_ENV === 'development';
+  
+  // Check exact matches first
+  if (uniqueAllowedOrigins.has(origin)) return true;
+  
+  // Only allow deployment platforms in production
+  if (process.env.NODE_ENV === 'production') {
+    return (
+      origin.endsWith('.onrender.com') ||
+      origin.endsWith('.vercel.app') ||
+      origin.endsWith('.netlify.app') ||
+      origin.endsWith('.railway.app')
+    );
+  }
+  
+  return false;
 };
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (isAllowedOrigin(origin)) return callback(null, true);
+      if (isAllowedOrigin(origin)) {
+        return callback(null, true);
+      }
+      console.warn(`CORS blocked origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    maxAge: 86400, // 24 hours
   })
 );
 
