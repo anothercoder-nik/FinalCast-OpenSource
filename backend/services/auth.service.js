@@ -3,7 +3,7 @@ import {
   findUserByEmail,
   findUserByEmailByPassword
 } from "../DAO/user.dao.js";
-import { signToken } from "../utils/helper.js";
+import { generateTokenPair, verifyRefreshToken, revokeAllUserTokens } from "../services/refreshToken.service.js";
 import { verifyTOTP, verifyBackupCode } from "./twoFactor.service.js";
 
 export const registerUser = async (name, email, password) => {
@@ -13,9 +13,9 @@ export const registerUser = async (name, email, password) => {
   }
 
   const user = await createUser(name, email, password);
-  const token = signToken({ id: user._id });
+  const { accessToken, refreshToken } = generateTokenPair(user._id);
 
-  return { token, user };
+  return { accessToken, refreshToken, user };
 };
 
 export const loginUser = async (
@@ -60,6 +60,21 @@ export const loginUser = async (
     }
   }
 
-  const token = signToken({ id: user._id });
-  return { token, user };
+  // Revoke all existing tokens for security
+  revokeAllUserTokens(user._id);
+  
+  const { accessToken, refreshToken } = generateTokenPair(user._id);
+  return { accessToken, refreshToken, user };
+};
+
+export const refreshAccessToken = async (refreshToken) => {
+  const tokenData = verifyRefreshToken(refreshToken);
+  
+  if (!tokenData) {
+    throw new Error("Invalid or expired refresh token");
+  }
+
+  const { accessToken, refreshToken: newRefreshToken } = generateTokenPair(tokenData.userId);
+  
+  return { accessToken, refreshToken: newRefreshToken };
 };

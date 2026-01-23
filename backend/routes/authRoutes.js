@@ -12,6 +12,7 @@ import {
   logoutUser,
   deleteUser,
   getCurrentUser,
+  refreshToken,
 
   // Google
   googleAuth,
@@ -25,8 +26,8 @@ import {
 } from "../controllers/authController.js";
 
 import { authenticateToken } from "../middleware/auth.js";
-import { signToken } from "../utils/helper.js";
-import { cookieOptions } from "../config/config.js";
+import { generateTokenPair } from "../services/refreshToken.service.js";
+import { cookieOptions, refreshCookieOptions } from "../config/config.js";
 
 const router = express.Router();
 
@@ -45,6 +46,7 @@ router.post("/registration/resend-otp", resendRegistrationOtp);
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/logout", authenticateToken, logoutUser);
+router.post("/refresh", refreshToken); // New refresh endpoint
 router.post("/delete", authenticateToken, deleteUser);
 router.get("/me", authenticateToken, getCurrentUser);
 
@@ -72,10 +74,12 @@ router.get(
   }),
   (req, res) => {
     /**
-     * Minimal glue logic (passport requirement)
+     * Secure Google OAuth callback with refresh tokens
      */
-    const token = signToken({ id: req.user._id });
-    res.cookie("accessToken", token, cookieOptions);
+    const { accessToken, refreshToken } = generateTokenPair(req.user._id);
+    
+    res.cookie("accessToken", accessToken, cookieOptions);
+    res.cookie("refreshToken", refreshToken, refreshCookieOptions);
 
     const redirectTo = req.cookies.oauth_redirect;
     if (redirectTo) {

@@ -1,5 +1,6 @@
-import { cookieOptions } from "../config/config.js";
-import { loginUser as loginUserService, registerUser as registerUserService } from "../services/auth.service.js";
+import { cookieOptions, refreshCookieOptions } from "../config/config.js";
+import { loginUser as loginUserService, registerUser as registerUserService, refreshAccessToken } from "../services/auth.service.js";
+import { revokeRefreshToken, revokeAllUserTokens } from "../services/refreshToken.service.js";
 import wrapAsync from "../utils/trycatchwrapper.js";
 import User from "../models/user.model.js";
 import passport from "passport";
@@ -105,11 +106,13 @@ export const registerUser = wrapAsync(async (req, res) => {
     return res.status(400).json({ message: "Invalid email verification" });
   }
 
-  const { token, user } = await registerUserService(name, email, password);
+  const { accessToken, refreshToken, user } = await registerUserService(name, email, password);
 
   registrationOTPService.deleteOTP(otpId);
 
-  res.cookie("accessToken", token, cookieOptions);
+  // Set secure cookies
+  res.cookie("accessToken", accessToken, cookieOptions);
+  res.cookie("refreshToken", refreshToken, refreshCookieOptions);
 
   res.status(200).json({
     user,
@@ -121,7 +124,7 @@ export const registerUser = wrapAsync(async (req, res) => {
 export const loginUser = wrapAsync(async (req, res) => {
   const { email, password, twoFactorToken, backupCode, redirectTo } = req.body;
 
-  const { token, user, requires2FA } = await loginUserService(
+  const { accessToken, refreshToken, user, requires2FA } = await loginUserService(
     email,
     password,
     twoFactorToken,
@@ -137,7 +140,9 @@ export const loginUser = wrapAsync(async (req, res) => {
     });
   }
 
-  res.cookie("accessToken", token, cookieOptions);
+  // Set secure cookies
+  res.cookie("accessToken", accessToken, cookieOptions);
+  res.cookie("refreshToken", refreshToken, refreshCookieOptions);
 
   res.status(200).json({
     user,
@@ -147,7 +152,22 @@ export const loginUser = wrapAsync(async (req, res) => {
 });
 
 export const logoutUser = wrapAsync(async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  
+  // Revoke refresh token if exists
+  if (refreshToken) {
+    revokeRefreshToken(refreshToken);
+  }
+  
+  // Revoke all user tokens for complete logout
+  if (req.user) {
+    revokeAllUserTokens(req.user._id);
+  }
+  
+  // Clear cookies
   res.clearCookie("accessToken", cookieOptions);
+  res.clearCookie("refreshToken", refreshCookieOptions);
+  
   res.status(200).json({ message: "Logout success" });
 });
 
@@ -277,4 +297,30 @@ export const regenerateBackupCodes = wrapAsync(async (req, res) => {
     message: "Backup codes regenerated",
     backupCodes: user.backupCodes.map(b => b.code)
   });
+});
+
+// -------------------- TOKEN REFRESH --------------------
+
+export const refreshToken = wrapAsync(async (req, res) => {
+  const refreshTokenFromCookie = req.cookies.refreshToken;
+  
+  if (!refreshTokenFromCookie) {
+    return res.status(401).json({ message: "Refresh token required" });
+  }
+  
+  try {
+    const { accessToken, refreshToken: newRefreshToken } = await refreshAccessToken(refreshTokenFromCookie);
+    
+    // Set new tokens in cookies
+    res.cookie("accessToken", accessToken, cookieOptions);
+    res.cookie("refreshToken", newRefreshToken, refreshCookieOptions);
+    
+    res.status(200).json({ message: "Tokens refreshed" });
+  } catch (error) {
+    // Clear invalid cookies
+    res.clearCookie("accessToken", cookieOptions);
+    res.clearCookie("refreshToken", refreshCookieOptions);
+    
+    res.status(401).json({ message: "Invalid refresh token" });
+  }
 });
