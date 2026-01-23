@@ -9,10 +9,12 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import helmet from 'helmet';
 
 import connectDB from './config/db.js';
 import './config/passport.js';
-import { validateEnvironment, securityHeaders } from './config/security.js';
+import { validateEnvironment, securityHeaders, ipProtection } from './config/security.js';
+import { generalLimiter } from './middleware/rateLimiter.js';
 import { attachuser } from './utils/attachUser.js';
 import { setupSocketHandlers } from './socket/socketHandlers.js';
 
@@ -40,6 +42,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ------------------ MIDDLEWARE ------------------
+// Trust proxy for accurate IP detection
+app.set('trust proxy', process.env.NODE_ENV === 'production');
+
+// Security middleware
+app.use(helmet({
+  contentSecurityPolicy: false, // We'll handle this in securityHeaders
+  crossOriginEmbedderPolicy: false
+}));
+app.use(ipProtection);
+app.use(generalLimiter);
 app.use(securityHeaders);
 app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
