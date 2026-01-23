@@ -1,4 +1,5 @@
 import { spawn } from 'child_process';
+import { assertSafeString } from '../utils/ffmpegSecurity.js';
 
 class YouTubeStreamingService {
   constructor() {
@@ -6,6 +7,18 @@ class YouTubeStreamingService {
   }
 
   startStream({ sessionId, rtmpUrl, streamKey, videoConfig = {} }) {
+    // FFmpeg fixup: Sanitize user inputs to prevent command injection
+    try {
+      assertSafeString(rtmpUrl, 'rtmpUrl');
+      assertSafeString(streamKey, 'streamKey');
+      // Validate videoConfig values
+      Object.keys(videoConfig).forEach(key => {
+        assertSafeString(String(videoConfig[key]), key);
+      });
+    } catch (error) {
+      throw new Error(`Invalid input: ${error.message}`);
+    }
+
     if (this.streams.has(sessionId)) {
       throw new Error('Stream already running');
     }

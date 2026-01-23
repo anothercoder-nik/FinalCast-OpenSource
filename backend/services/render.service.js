@@ -2,6 +2,7 @@ import ffmpeg from "fluent-ffmpeg";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import { sanitizeLayout, sanitizeSafePath } from "../utils/ffmpegSecurity.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = path.join(__dirname, "../temp/renders");
@@ -16,6 +17,21 @@ export const renderComposition = async ({
   inputs,
   duration
 }) => {
+  // FFmpeg fixup: Validate layout and sanitize inputs to prevent injection
+  try {
+    layout = sanitizeLayout(layout);
+    // Sanitize input URLs if they are local file paths
+    inputs = inputs.map(input => {
+      if (input.url && input.url.startsWith('/')) {
+        // Assume local path, sanitize
+        input.url = sanitizeSafePath(input.url, path.join(__dirname, "../temp"));
+      }
+      return input;
+    });
+  } catch (error) {
+    throw new Error(`Invalid input: ${error.message}`);
+  }
+
   const outputPath = path.join(
     OUTPUT_DIR,
     `render_${sessionId}_${Date.now()}.mp4`
