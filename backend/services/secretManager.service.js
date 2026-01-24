@@ -4,6 +4,7 @@ import path from 'path';
 
 const ENCRYPTION_KEY = process.env.MASTER_KEY || crypto.randomBytes(32);
 const IV_LENGTH = 16;
+const ALGORITHM = 'aes-256-cbc';
 
 class SecretManager {
   constructor() {

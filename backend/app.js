@@ -20,9 +20,17 @@ import { validateEnvironment, securityHeaders, ipProtection } from './config/sec
 import { generalLimiter } from './middleware/rateLimiter.js';
 import { attachuser } from './utils/attachUser.js';
 import { setupSocketHandlers } from './socket/socketHandlers.js';
+import memoryManager from './services/memoryManager.service.js';
 
 // Validate environment variables on startup
 validateEnvironment();
+
+// Enable garbage collection if available
+if (global.gc) {
+  console.log('Garbage collection enabled');
+} else {
+  console.warn('Garbage collection not available. Run with --expose-gc for better memory management');
+}
 
 // Routes
 import authRoutes from './routes/authRoutes.js';
@@ -142,11 +150,23 @@ app.use('/temp', express.static(path.join(__dirname, 'temp')));
 
 // ------------------ HEALTH CHECK ------------------
 app.get('/api/health', (req, res) => {
+  const memStats = memoryManager.getMemoryStats();
   res.json({
     status: 'ok',
     env: process.env.NODE_ENV,
     time: new Date().toISOString(),
+    memory: memStats,
+    uptime: process.uptime()
   });
+});
+
+// Memory stats endpoint
+app.get('/api/memory-stats', (req, res) => {
+  if (process.env.NODE_ENV === 'development') {
+    res.json(memoryManager.getMemoryStats());
+  } else {
+    res.status(404).json({ error: 'Not found' });
+  }
 });
 
 // ------------------ START SERVER ------------------
