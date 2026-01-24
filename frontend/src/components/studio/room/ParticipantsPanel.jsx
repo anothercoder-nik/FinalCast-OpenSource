@@ -3,7 +3,7 @@ import { Badge } from '../../ui/badge';
 import { Button } from '../../ui/button';
 import { Avatar, AvatarFallback } from '../../ui/avatar';
 import { Mic, Video, Users, Mail } from 'lucide-react';
-import EmailInvitationModal from '../EmailInvitationModal';
+import EmailInvitationModal from '../../Main/EmailInvitationModal';
 
 const ParticipantsPanel = ({ onlineParticipants, session, currentUser, isHost }) => {
     const totalCount = onlineParticipants.length;

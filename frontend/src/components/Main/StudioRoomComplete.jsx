@@ -284,7 +284,11 @@ export const StudioRoomComplete = () => {
   if (error) return <div className="flex items-center justify-center h-screen bg-stone-950 text-red-400">Error: {error}</div>;
 
   return (
-    <div className="flex flex-col h-screen bg-stone-950 overflow-hidden">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-stone-950 via-stone-900 to-black overflow-hidden relative">
+      {/* Studio Background Effects */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(147,51,234,0.1)_0%,transparent_50%)] pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(236,72,153,0.05)_0%,transparent_50%)] pointer-events-none"></div>
+      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-purple-600/5 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
       {!isFullScreen && (
         <TopBar
           isLive={sessionStatus === 'live'}
@@ -299,8 +303,8 @@ export const StudioRoomComplete = () => {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Main Video Area */}
-        <div className="flex-1 relative bg-stone-950 flex flex-col min-h-0">
-          <div className="flex-1 relative p-4 overflow-hidden" ref={videoGridRef}>
+        <div className="flex-1 relative bg-gradient-to-br from-stone-950 to-stone-900 flex flex-col min-h-0 shadow-inner">
+          <div className="flex-1 relative p-6 overflow-hidden" ref={videoGridRef}>
             <VideoGrid
               localStream={localStream}
               remoteStreams={remoteStreams}
@@ -321,35 +325,47 @@ export const StudioRoomComplete = () => {
 
             {/* Overlay for join prompt */}
             {!isJoined && !loading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-10">
-                <div className="bg-stone-900 border border-stone-800 p-8 rounded-xl shadow-2xl max-w-md w-full text-center">
-                  <h2 className="text-2xl font-bold text-white mb-2">Ready to join?</h2>
-                  <p className="text-stone-400 mb-6">You are about to join {session?.title}</p>
+              <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-md z-10">
+                <div className="bg-gradient-to-br from-stone-900 to-stone-800 border border-purple-500/30 p-8 rounded-2xl shadow-2xl max-w-md w-full text-center animate-in fade-in slide-in-from-bottom-4">
+                  <div className="mb-4">
+                    <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center mb-4 shadow-lg">
+                      <span className="text-2xl">🎙️</span>
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-2">Welcome to the Studio</h2>
+                    <p className="text-stone-300 mb-6">Ready to join {session?.title}?</p>
+                  </div>
 
                   {isHost ? (
                     <button
                       onClick={handleStartSession}
                       disabled={!isConnected}
-                      className="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors mb-3"
+                      className="w-full py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl font-medium transition-all duration-300 mb-3 shadow-lg hover:shadow-green-500/25 hover:scale-105"
                     >
-                      Start Session
+                      🎬 Start Session
                     </button>
                   ) : sessionStatus === 'live' ? (
                     <button
                       onClick={handleJoinSession}
                       disabled={!isConnected}
-                      className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors mb-3"
+                      className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-medium transition-all duration-300 mb-3 shadow-lg hover:shadow-blue-500/25 hover:scale-105"
                     >
-                      Join Session
+                      🎙️ Join Session
                     </button>
                   ) : (
-                    <div className="bg-stone-800 p-4 rounded-lg text-stone-300">
+                    <div className="bg-stone-800/50 p-4 rounded-xl text-stone-300 border border-stone-700/50">
                       Waiting for host to start the session...
+                      <div className="flex justify-center mt-2">
+                        <div className="flex space-x-1">
+                          <div className="w-2 h-2 bg-stone-600 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-stone-600 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                          <div className="w-2 h-2 bg-stone-600 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                        </div>
+                      </div>
                     </div>
                   )}
 
                   {joinError && (
-                    <div className="mt-4 p-3 bg-red-900/30 border border-red-800 text-red-300 rounded text-sm">
+                    <div className="mt-4 p-3 bg-red-900/30 border border-red-800/50 text-red-300 rounded-xl text-sm animate-in fade-in">
                       {joinError}
                     </div>
                   )}
