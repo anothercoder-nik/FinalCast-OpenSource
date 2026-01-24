@@ -98,10 +98,25 @@ app.use('/temp', express.static(path.join(__dirname, 'temp')));
 
 // ------------------ HEALTH CHECK ------------------
 app.get('/api/health', (req, res) => {
+  const requiredEnv = [
+    'NODE_ENV',
+    'PORT',
+    'MONGODB_URI',
+    'JWT_SECRET',
+    'SESSION_SECRET',
+    'FRONTEND_URL',
+    'BACKEND_URL',
+  ];
+
+  const envStatus = {};
+  requiredEnv.forEach((key) => {
+    envStatus[key] = Boolean(process.env[key]);
+  });
+
   res.json({
     status: 'ok',
-    env: process.env.NODE_ENV,
-    time: new Date().toISOString(),
+    env: envStatus,
+    timestamp: new Date().toISOString(),
   });
 });
 
