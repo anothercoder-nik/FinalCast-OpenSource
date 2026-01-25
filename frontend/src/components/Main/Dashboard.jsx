@@ -1,9 +1,15 @@
 import React from 'react';
+ // adjust path if needed
+
 import { useSelector } from 'react-redux';
 import { Link } from '@tanstack/react-router';
 import { FloatingShapes } from '../utils/floating-shapers';
 import Navbar from '../utils/Navbar';
 import { WobbleCard } from '../studio/wobble-card';
+import { useState, useEffect } from "react";
+import Spinner from "../spinner";
+const [loading, setLoading] = useState(true);
+
 
 const Dashboard = () => {
   const { user } = useSelector((state) => state.auth);

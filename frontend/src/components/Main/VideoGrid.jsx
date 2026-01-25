@@ -1,6 +1,8 @@
-import React, { useEffect, useRef, memo } from 'react';
+import React, { useEffect, useRef, useState, memo } from 'react';
 import { Users, Pin, PinOff, MicOff, VideoOff } from 'lucide-react';
 import AudioVisualizer from '../ui/AudioVisualizer';
+import Spinner from "../spinner"; // adjust if path error
+
 
 const getConnectionColor = (state) => {
   switch (state) {
@@ -111,6 +113,7 @@ const VideoTile = memo(({
 });
 
 const VideoGrid = ({
+
   onlineParticipants,
   currentUser,
   localStream,
@@ -125,6 +128,8 @@ const VideoGrid = ({
   isSidebarCollapsed
 }) => {
   const remoteVideoRefs = useRef(new Map());
+    const [loading, setLoading] = useState(true);
+
 
   // Derive all participants list including local user
   const participants = [
@@ -140,6 +145,12 @@ const VideoGrid = ({
       stream: remoteStreams?.get(p.userId)
     }))
   ];
+    useEffect(() => {
+    if (localStream || participants.length > 0) {
+      setLoading(false);
+    }
+  }, [localStream, participants.length]);
+
 
   const handlePin = (p) => {
     if (pinnedVideo?.userId === p.userId) {
@@ -155,6 +166,11 @@ const VideoGrid = ({
     if (count <= 9) return 'grid-cols-3';
     return 'grid-cols-4';
   };
+
+    if (loading) {
+    return <Spinner />;
+  }
+
 
   // Pinned Layout
   if (pinnedVideo) {
