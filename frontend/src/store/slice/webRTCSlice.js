@@ -205,5 +205,7 @@ export const selectRemoteStreams = (state) => state.webrtc.remoteStreams;
 export const selectMediaPermissions = (state) => state.webrtc.mediaPermissions;
 export const selectConnectionStates = (state) => state.webrtc.connectionStates;
 export const selectIsWebRTCInitialized = (state) => state.webrtc.isInitialized;
+export const selectIsVideoEnabled = (state) => state.webrtc.isVideoEnabled;
+export const selectIsAudioEnabled = (state) => state.webrtc.isAudioEnabled;
 
 export default webrtcSlice.reducer;

@@ -1,11 +1,13 @@
-
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import { useSocket } from '../context/SocketContext';
 import WebRTCManager from '../utils/webRTCManager';
 import { toast } from 'sonner';
+import { toggleVideo as toggleVideoAction, toggleAudio as toggleAudioAction } from '../store/slice/webRTCSlice.js';
 
 export const useWebRTC = (roomId, isJoined, currentUser) => {
   const { socket, isConnected } = useSocket();
+  const dispatch = useDispatch();
   
   // Local state
   const [isInitialized, setIsInitialized] = useState(false);
@@ -455,6 +457,7 @@ export const useWebRTC = (roomId, isJoined, currentUser) => {
     
     const newState = !isAudioEnabled;
     setIsAudioEnabled(newState);
+    dispatch(toggleAudioAction());
     
     localStream.getAudioTracks().forEach(track => {
       track.enabled = newState;
@@ -462,13 +465,14 @@ export const useWebRTC = (roomId, isJoined, currentUser) => {
     
     toast.info(newState ? 'Microphone enabled' : 'Microphone disabled');
     return true;
-  }, [isAudioEnabled, localStream]);
+  }, [isAudioEnabled, localStream, dispatch]);
 
   const toggleVideo = useCallback(() => {
     if (!localStream || !mountedRef.current) return false;
     
     const newState = !isVideoEnabled;
     setIsVideoEnabled(newState);
+    dispatch(toggleVideoAction());
     
     localStream.getVideoTracks().forEach(track => {
       track.enabled = newState;
@@ -476,7 +480,7 @@ export const useWebRTC = (roomId, isJoined, currentUser) => {
     
     toast.info(newState ? 'Camera enabled' : 'Camera disabled');
     return true;
-  }, [isVideoEnabled, localStream]);
+  }, [isVideoEnabled, localStream, dispatch]);
 
   const startScreenShare = useCallback(async () => {
     if (!mountedRef.current) return false;
