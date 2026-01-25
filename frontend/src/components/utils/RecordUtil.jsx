@@ -2,7 +2,7 @@ import React from 'react'
 
 const RecordUtil = () => {
   return (
-     <section className="bg-white pt-20 px-4 md:px-8">
+     <section className="bg-white pt-20 pb-20 px-4 md:px-8">
   {/* Top Record It Block */}
   <div className="text-center mb-20">
     <h2 className="text-3xl md:text-4xl font-bold mb-4 text-black">Record it.</h2>
@@ -22,67 +22,65 @@ const RecordUtil = () => {
   </div>
 
   {/* Main Recording Feature Section */}
-  <div className="max-w-[100vw] overflow-x-hidden">
-    <div className="grid lg:grid-cols-3 items-center gap-10">
+  <div className="max-w-7xl mx-auto">
+    <div className="grid lg:grid-cols-3 items-start gap-6">
       
-      {/* Left: Video or Screenshot with no left margin */}
-      <div className="lg:col-span-2 relative rounded-xl overflow-hidden shadow-lg ml-0">
+      {/* Left: Video or Screenshot */}
+      <div className="lg:col-span-2 relative rounded-2xl overflow-hidden shadow-2xl">
         <img
-          src="/demo.png" // Replace with your actual image path
+          src="/demo.png"
           alt="Recording demo"
-          className="w-full h-full object-cover rounded-xl"
+          className="w-full h-full object-cover"
         />
-        <div className="absolute top-4 right-4 bg-red-600 text-white text-sm px-3 py-1 rounded-full shadow-md">
-          ● REC
+        <div className="absolute top-6 right-6 bg-red-600 text-white text-xs font-semibold px-3 py-1.5 rounded-md shadow-lg flex items-center gap-1.5">
+          <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+          REC
         </div>
       </div>
 
       {/* Right Panel: Download Options */}
-      <div className="space-y-6 px-4 md:px-0">
+      <div className="space-y-6">
         {/* Highlight Image */}
-        <div className="rounded-xl overflow-hidden shadow-md">
+        <div className="rounded-2xl overflow-hidden shadow-xl relative">
           <img
-            src="/demo2.png" // Replace with actual image
+            src="/demo2.png"
             alt="4K recording"
             className="w-full object-cover"
           />
+          <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-sm text-white text-sm font-semibold px-4 py-2 rounded-lg">
+            <span className="font-bold">4K</span> high-quality recording
+          </div>
         </div>
 
         {/* Download Section */}
-        <div className="bg-zinc-900 text-white rounded-xl p-6 space-y-4 shadow-lg">
-          <h3 className="text-lg font-semibold mb-4">Download separate tracks</h3>
+        <div className="bg-black text-white rounded-2xl p-6 shadow-2xl">
+          <h3 className="text-base font-bold mb-5">Download separate tracks</h3>
 
           {[
-            { name: "Marsha", img: null, icon: true },
-            { name: "Stephen", img: null, icon: true },
-            { name: "All Speakers", img: null, icon: true },
+            { name: "Marsha", initial: "M", color: "bg-purple-600" },
+            { name: "Stephen", initial: "S", color: "bg-purple-600" },
+            { name: "All Speakers", initial: "A", color: "bg-purple-600" },
           ].map((person, idx) => (
             <div
               key={idx}
-              className="flex items-center justify-between bg-zinc-800 px-4 py-3 rounded-lg"
+              className="flex items-center justify-between py-4 border-b border-zinc-800 last:border-b-0"
             >
               <div className="flex items-center gap-3">
-                {person.icon ? (
-                  <div className="w-10 h-10 flex items-center justify-center bg-zinc-700 rounded-full">
-                    <span className="text-purple-400 text-xl">👤</span>
-                  </div>
-                ) : (
-                  <img
-                    src={person.img}
-                    alt={person.name}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                )}
+                <div className={`w-10 h-10 flex items-center justify-center ${person.color} rounded-full text-white font-bold text-sm`}>
+                  {person.initial}
+                </div>
                 <div>
-                  <p className="font-medium">{person.name}</p>
-                  <p className="text-xs text-zinc-400">Ready</p>
+                  <p className="font-semibold text-sm">{person.name}</p>
+                  <p className="text-xs text-gray-400">Ready</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 text-sm text-zinc-300">
-                <p>3840 × 2160</p>
-                <button className="hover:text-white">⬇️ WAV</button>
-                <button className="hover:text-white">⬇️ MP4</button>
+              <div className="flex items-center gap-4 text-xs">
+                <span className="text-gray-400 hidden sm:inline">3840 × 2160</span>
+                <div className="flex items-center gap-2">
+                  <span className="bg-blue-600 text-white px-2 py-1 rounded font-medium">WAV</span>
+                  <span className="bg-blue-500 text-white px-2 py-1 rounded font-medium">MP4</span>
+                </div>
               </div>
             </div>
           ))}

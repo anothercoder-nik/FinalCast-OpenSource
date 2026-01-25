@@ -61,48 +61,53 @@ const VideoTile = memo(({
   const hasAudio = stream?.getAudioTracks().some(t => t.enabled);
 
   return (
-    <div className={`relative bg-stone-900 rounded-xl overflow-hidden border border-stone-800 group hover:border-stone-700 transition-all ${className}`}>
+    <div className={`relative bg-gradient-to-br from-stone-900 to-stone-800 rounded-2xl overflow-hidden border-2 border-stone-700/50 group hover:border-purple-400/50 transition-all duration-300 shadow-xl hover:shadow-purple-500/20 hover:shadow-2xl animate-in fade-in slide-in-from-bottom-4 ${className}`}>
       {stream && hasVideo ? (
         <video
           ref={setRef}
           autoPlay
           muted
           playsInline
-          className="w-full h-full object-cover bg-stone-900"
+          className="w-full h-full object-cover bg-stone-900 transition-transform duration-300 group-hover:scale-105"
         />
       ) : (
-        <div className="w-full h-full flex flex-col items-center justify-center p-4">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-stone-800 to-stone-700 flex items-center justify-center text-2xl font-bold text-stone-400 mb-3 shadow-inner">
+        <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-stone-800 to-stone-900">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-xl font-bold text-white mb-2 shadow-lg animate-pulse">
             {displayName?.[0]?.toUpperCase() || '?'}
           </div>
-          <p className="text-stone-300 font-medium truncate max-w-full px-2">{displayName}</p>
-          <p className="text-xs text-stone-500 mt-1 capitalize">{connectionState || (isLocal ? 'Active' : 'Connecting...')}</p>
+          <p className="text-stone-200 font-medium truncate max-w-full px-2 text-sm">{displayName}</p>
+          <p className="text-xs text-stone-400 mt-1 capitalize">{connectionState || (isLocal ? 'Active' : 'Connecting...')}</p>
         </div>
       )}
 
       {/* Overlay info */}
-      <div className="absolute bottom-3 left-3 flex items-center gap-2 max-w-[80%]">
-        <div className="bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg text-xs font-medium text-white flex items-center gap-2 truncate shadow-sm border border-white/10">
+      <div className="absolute bottom-2 left-2 flex items-center gap-2 max-w-[80%]">
+        <div className="bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-medium text-white flex items-center gap-2 truncate shadow-lg border border-white/20">
           <span className="truncate">{displayName} {isLocal && '(You)'}</span>
-          {!hasAudio && <MicOff size={12} className="text-red-400 flex-shrink-0" />}
-          {!hasVideo && <VideoOff size={12} className="text-red-400 flex-shrink-0" />}
+          {!hasAudio && <MicOff size={12} className="text-red-400 flex-shrink-0 animate-pulse" />}
+          {!hasVideo && <VideoOff size={12} className="text-red-400 flex-shrink-0 animate-pulse" />}
         </div>
       </div>
 
       {/* Pin Button */}
       <button
         onClick={(e) => { e.stopPropagation(); onPin(); }}
-        className="absolute top-3 left-3 p-2 rounded-lg bg-black/40 text-white/90 opacity-0 group-hover:opacity-100 transition-all hover:bg-white/20 hover:scale-105 backdrop-blur-sm"
+        className="absolute top-2 left-2 p-2 rounded-lg bg-black/60 text-white/90 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-purple-600/80 hover:scale-110 backdrop-blur-sm shadow-lg"
         title={isPinned ? "Unpin" : "Pin"}
       >
         {isPinned ? <PinOff size={16} /> : <Pin size={16} />}
       </button>
 
       {/* Status Icons */}
-      <div className="absolute top-3 right-3 flex items-center gap-2">
+      <div className="absolute top-2 right-2 flex items-center gap-2">
         {isLocal && hasAudio && <AudioVisualizer audioLevel={audioLevel} isAudioEnabled={true} size="sm" />}
-        {!isLocal && <div className={`w-2.5 h-2.5 rounded-full ring-2 ring-black/20 ${getConnectionColor(connectionState)}`} title={connectionState} />}
+        {!isLocal && <div className={`w-3 h-3 rounded-full ring-2 ring-black/30 shadow-lg transition-all duration-300 ${getConnectionColor(connectionState)}`} title={connectionState} />}
       </div>
+
+      {/* Speaking Indicator */}
+      {audioLevel > 0.1 && (
+        <div className="absolute inset-0 border-4 border-green-400/50 rounded-2xl animate-pulse pointer-events-none"></div>
+      )}
 
       {/* Remote Audio */}
       {!isLocal && stream && hasAudio && <AudioElement stream={stream} />}
@@ -202,31 +207,62 @@ const VideoGrid = ({
     );
   }
 
-  // Grid Layout
+  // Circular Layout for Podcast Studio
   return (
-    <div className={`h-full overflow-y-auto p-4 ${isFullScreen ? 'p-8' : ''}`}>
+    <div className="h-full flex items-center justify-center p-8 relative">
       {participants.length === 0 ? (
-        <div className="h-full flex flex-col items-center justify-center text-stone-500 space-y-4">
-          <div className="p-6 rounded-full bg-stone-900">
-            <Users size={48} className="opacity-50" />
+        <div className="flex flex-col items-center justify-center text-stone-500 space-y-4 animate-pulse">
+          <div className="p-8 rounded-full bg-gradient-to-br from-stone-800 to-stone-900 shadow-2xl">
+            <Users size={64} className="opacity-60" />
           </div>
-          <p>Waiting for participants...</p>
+          <p className="text-lg font-medium">Waiting for participants...</p>
+          <div className="flex space-x-2">
+            <div className="w-2 h-2 bg-stone-600 rounded-full animate-bounce"></div>
+            <div className="w-2 h-2 bg-stone-600 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+            <div className="w-2 h-2 bg-stone-600 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+          </div>
         </div>
       ) : (
-        <div className={`grid gap-4 ${getGridClasses(participants.length)} auto-rows-fr h-full max-h-full`}>
-          {participants.map(p => (
-            <VideoTile
-              key={p.userId}
-              {...p}
-              displayName={p.userName}
-              videoRef={p.isLocal ? localVideoRef : undefined}
-              isPinned={false}
-              onPin={() => handlePin(p)}
-              connectionState={connectionStates?.get(p.userId)}
-              audioLevel={p.isLocal ? audioLevel : 0}
-              className="w-full h-full shadow-lg"
-            />
-          ))}
+        <div className="relative w-full h-full max-w-4xl max-h-4xl">
+          {/* Center Studio Logo/Indicator */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-white/10 flex items-center justify-center shadow-2xl animate-pulse">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                <span className="text-white font-bold text-lg">🎙️</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Circular Video Layout */}
+          {participants.map((p, index) => {
+            const angle = (index / participants.length) * 2 * Math.PI - Math.PI / 2; // Start from top
+            const radius = Math.min(300, 150 + participants.length * 20); // Dynamic radius
+            const x = Math.cos(angle) * radius;
+            const y = Math.sin(angle) * radius;
+
+            return (
+              <div
+                key={p.userId}
+                className="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ease-out hover:scale-105 hover:z-10"
+                style={{
+                  left: `calc(50% + ${x}px)`,
+                  top: `calc(50% + ${y}px)`,
+                  animationDelay: `${index * 0.1}s`
+                }}
+              >
+                <VideoTile
+                  {...p}
+                  displayName={p.userName}
+                  videoRef={p.isLocal ? localVideoRef : undefined}
+                  isPinned={false}
+                  onPin={() => handlePin(p)}
+                  connectionState={connectionStates?.get(p.userId)}
+                  audioLevel={p.isLocal ? audioLevel : 0}
+                  className="w-48 h-32 shadow-2xl border-2 border-white/20 hover:border-purple-400/50 transition-all duration-300"
+                />
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
