@@ -31,20 +31,23 @@ const Navbar = () => {
         <div className="hidden md:flex space-x-7">
             <Link
               href="#features"
-              className="text-white font-semibold font-inter transition-all duration-300 hover:text-cyan-400 cursor-pointer"
+              className="text-gray-300 font-semibold transition-all duration-300 hover:text-white cursor-pointer"
+
             >
               Features
             </Link>
             <Link
               href="#pricing"
-              className="text-white font-semibold transition-all duration-300 hover:text-cyan-400 cursor-pointer"
+              className="text-gray-300 font-semibold transition-all duration-300 hover:text-white cursor-pointer"
+
             >
               Pricing
               
             </Link>
             <Link
               href="#contact"
-              className="text-white font-semibold transition-all duration-300 hover:text-cyan-400 cursor-pointer"
+              className="text-gray-300 font-semibold transition-all duration-300 hover:text-white cursor-pointer"
+
             >
               Contact
             </Link>
