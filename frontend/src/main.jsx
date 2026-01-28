@@ -8,6 +8,7 @@ import { ThemeProvider } from './components/utils/theme-provider.jsx'
 import { Provider } from 'react-redux'
 import { store } from './store/store.js'
 import { SocketProvider } from './context/SocketContext.js'
+import ScrollToTop from "./components/ui/ScrollToTop"
 
 export const queryClient = new QueryClient()
 const router = createRouter({
@@ -28,5 +29,6 @@ createRoot(document.getElementById('root')).render(
         </QueryClientProvider>
       </ThemeProvider>
     </SocketProvider>
+    <ScrollToTop />
   </Provider>
 )

@@ -8,11 +8,14 @@ import Navbar from '../utils/Navbar';
 import { WobbleCard } from '../studio/wobble-card';
 import { useState, useEffect } from "react";
 import Spinner from "../spinner";
-const [loading, setLoading] = useState(true);
+
 
 
 const Dashboard = () => {
   const { user } = useSelector((state) => state.auth);
+
+  const [loading, setLoading] = useState(true);
+
 
   return (
     <div className="min-h-screen bg-stone-950 text-white selection:bg-purple-500/30">
