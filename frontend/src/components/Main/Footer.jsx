@@ -5,7 +5,7 @@ import { FaFacebookF, FaYoutube, FaInstagram, FaLinkedinIn } from "react-icons/f
 const Footer = () => {
   return (
     <footer className="bg-[#f9f9f9] text-[#333] text-sm pt-16 pb-10 px-6 md:px-12">
-      <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8">
         {/* Company */}
         <div>
           <h4 className="font-semibold mb-4">Company</h4>
@@ -53,6 +53,14 @@ const Footer = () => {
             <li><a href="#">Help Center</a></li>
             <li><a href="#">Blog</a></li>
             <li><a href="#">Community Hub</a></li>
+          </ul>
+        </div>
+
+        {/* Legal Pages */}
+        <div>
+          <h4 className="font-semibold mb-4">Legal Pages</h4>
+          <ul className="space-y-2">
+            <li><a href="/cookies-policy">Cookies Policy</a></li>
           </ul>
         </div>
       </div>

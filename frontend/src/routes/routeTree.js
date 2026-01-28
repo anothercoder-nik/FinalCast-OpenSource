@@ -12,6 +12,7 @@ import { sessionDetailsRoute } from "./sessionDetailsRoute.js"
 import { settingsRoute } from "./settingsRoute.js"
 import { editorRoute } from "./editorRoute.js"
 import { rootRoute } from "./__root.js"
+import { cookiesPolicyRoute } from "./cookies-policy";
 
 
 
@@ -26,5 +27,6 @@ export const routeTree = rootRoute.addChildren([
     studioRoomRoute,
     sessionDetailsRoute,
     settingsRoute,
-    editorRoute
+    editorRoute,
+    cookiesPolicyRoute
 ])
