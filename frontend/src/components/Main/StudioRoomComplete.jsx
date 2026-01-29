@@ -16,7 +16,7 @@ import Sidebar from '../studio/room/Sidebar';
 import UploadStatus from '../studio/UploadStatus';
 import VideoGrid from './VideoGrid';
 import MediaPermissionDialog from '../ui/MediaPermissionDialog';
-import YouTubeModal from '../studio/YoutubeModal';
+import RTMPModal from '../studio/RTMPModal';
 
 // Hooks
 import { useWebRTC } from '../../hooks/useWebRTC';
@@ -54,7 +54,7 @@ export const StudioRoomComplete = () => {
   const [permissionAction, setPermissionAction] = useState(null); // 'start' or 'join'
   const [pinnedVideo, setPinnedVideo] = useState(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [showYouTubeModal, setShowYouTubeModal] = useState(false);
+  const [showRTMPModal, setShowRTMPModal] = useState(false);
   const [isGridStreaming, setIsGridStreaming] = useState(false);
   const videoGridRef = useRef(null);
 
@@ -431,14 +431,14 @@ export const StudioRoomComplete = () => {
         onPermissionDenied={handlePermissionDenied}
       />
 
-      <YouTubeModal
-        isOpen={showYouTubeModal}
-        onClose={() => setShowYouTubeModal(false)}
+      <RTMPModal
+        isOpen={showRTMPModal}
+        onClose={() => setShowRTMPModal(false)}
         onStartStream={async (config) => {
-          setShowYouTubeModal(false);
+          setShowRTMPModal(false);
           setIsGridStreaming(true);
+          // TODO: Call startRTMPStream API here with config
         }}
-        session={session}
       />
 
       <UploadStatus
