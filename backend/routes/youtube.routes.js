@@ -7,7 +7,11 @@ import {
   getActiveStreams,
   handleStreamChunk,
   handleAudioChunk,
-  getStreamHealth
+  getStreamHealth,
+  setStreamKey,
+  getStreamKey,
+  updateStreamKey,
+  removeStreamKey
 } from "../controllers/youtubeController.js";
 import { authenticateToken } from "../middleware/auth.js";
 
@@ -31,5 +35,11 @@ router.post("/audio-chunk", upload.single("chunk"), handleAudioChunk);
 router.get("/stream-status/:sessionId", getStreamStatus);
 router.get("/active-streams", getActiveStreams);
 router.get("/health/:sessionId", getStreamHealth);
+
+// Stream key management
+router.post("/stream-key", setStreamKey);
+router.get("/stream-key/:sessionId", getStreamKey);
+router.put("/stream-key", updateStreamKey);
+router.delete("/stream-key", removeStreamKey);
 
 export default router;
