@@ -28,4 +28,34 @@ export const registerStreamHandlers = (io, socket) => {
       });
     }
   });
+
+  // Broadcast YouTube stream status to participants
+  socket.on("get-youtube-stream-status", ({ sessionId }) => {
+    if (!sessionId) {
+      socket.emit("youtube-stream-error", {
+        message: "Session ID required"
+      });
+      return;
+    }
+
+    const status = YouTubeStreamingService.getStatus(sessionId);
+    io.to(sessionId).emit("youtube-stream-status", status);
+  });
+
+  // Handle stream status updates and broadcast to room
+  socket.on("update-youtube-stream-status", ({ sessionId, status }) => {
+    if (!sessionId || !status) {
+      socket.emit("youtube-stream-error", {
+        message: "Session ID and status required"
+      });
+      return;
+    }
+
+    // Broadcast status update to all participants in the session
+    io.to(sessionId).emit("youtube-stream-status-update", {
+      sessionId,
+      status,
+      timestamp: Date.now()
+    });
+  });
 };

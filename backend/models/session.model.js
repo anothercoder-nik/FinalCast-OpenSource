@@ -26,11 +26,12 @@ const sessionSchema = new mongoose.Schema({
     videoOnJoin: { type: Boolean, default: true }
   },
   roomId: { type: String, unique: true, sparse: true },
-  status: { 
-    type: String, 
-    enum: ['scheduled', 'live', 'ended', 'cancelled'], 
-    default: 'scheduled' 
-  }
+  status: {
+    type: String,
+    enum: ['scheduled', 'live', 'ended', 'cancelled'],
+    default: 'scheduled'
+  },
+  youtubeStreamId: { type: String }
 }, {timestamps: true});
 
 // Generate unique room ID before saving

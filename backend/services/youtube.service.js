@@ -4,6 +4,9 @@ import { assertSafeString } from '../utils/ffmpegSecurity.js';
 class YouTubeStreamingService {
   constructor() {
     this.streams = new Map();
+    this.streamKeys = new Map(); // Store stream keys securely
+    this.errors = new Map(); // Store errors per session
+    this.statusCallbacks = new Map(); // Store status change callbacks
   }
 
   startStream({ sessionId, rtmpUrl, streamKey, videoConfig = {} }) {
@@ -72,17 +75,26 @@ class YouTubeStreamingService {
     ffmpeg.stderr.on('data', d => {
       const msg = d.toString();
       if (msg.includes('frame=')) {
-        const s = this.streams.get(sessionId);
-        if (s) s.status = 'live';
+        this._updateStatus(sessionId, 'live');
       }
       if (msg.includes('Connection refused') || msg.includes('Server returned')) {
         console.error('❌ RTMP rejected by YouTube');
+        this.addError(sessionId, 'RTMP connection failed');
+        this._updateStatus(sessionId, 'error');
       }
     });
 
     ffmpeg.on('close', code => {
       console.log(`FFmpeg exited (${code}) for ${sessionId}`);
+      this._updateStatus(sessionId, 'stopped');
       this.streams.delete(sessionId);
+      this.clearErrors(sessionId);
+    });
+
+    ffmpeg.on('error', err => {
+      console.error(`FFmpeg error for ${sessionId}:`, err);
+      this.addError(sessionId, err.message);
+      this._updateStatus(sessionId, 'error');
     });
 
     this.streams.set(sessionId, {
@@ -124,8 +136,73 @@ class YouTubeStreamingService {
     return {
       active: true,
       status: s.status,
-      uptimeMs: Date.now() - s.startedAt
+      uptimeMs: Date.now() - s.startedAt,
+      errors: this.errors.get(sessionId) || []
     };
+  }
+
+  // Store stream key securely
+  setStreamKey(sessionId, streamKey) {
+    if (!sessionId || !streamKey) {
+      throw new Error('Session ID and stream key required');
+    }
+    this.streamKeys.set(sessionId, streamKey);
+  }
+
+  // Get stored stream key
+  getStreamKey(sessionId) {
+    return this.streamKeys.get(sessionId);
+  }
+
+  // Remove stream key
+  removeStreamKey(sessionId) {
+    this.streamKeys.delete(sessionId);
+  }
+
+  // Add error for session
+  addError(sessionId, error) {
+    if (!this.errors.has(sessionId)) {
+      this.errors.set(sessionId, []);
+    }
+    const sessionErrors = this.errors.get(sessionId);
+    sessionErrors.push({
+      message: error.message || error,
+      timestamp: Date.now()
+    });
+    // Keep only last 10 errors
+    if (sessionErrors.length > 10) {
+      sessionErrors.shift();
+    }
+  }
+
+  // Clear errors for session
+  clearErrors(sessionId) {
+    this.errors.delete(sessionId);
+  }
+
+  // Register callback for status changes
+  onStatusChange(sessionId, callback) {
+    this.statusCallbacks.set(sessionId, callback);
+  }
+
+  // Remove status change callback
+  removeStatusCallback(sessionId) {
+    this.statusCallbacks.delete(sessionId);
+  }
+
+  // Internal method to update status and trigger callbacks
+  _updateStatus(sessionId, newStatus) {
+    const stream = this.streams.get(sessionId);
+    if (stream && stream.status !== newStatus) {
+      const oldStatus = stream.status;
+      stream.status = newStatus;
+
+      // Trigger callback if registered
+      const callback = this.statusCallbacks.get(sessionId);
+      if (callback) {
+        callback({ sessionId, oldStatus, newStatus });
+      }
+    }
   }
 }
 

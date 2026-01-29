@@ -154,3 +154,88 @@ export const getStreamHealth = wrapAsync(async (req, res) => {
     data
   });
 });
+
+// -------------------- STREAM KEY MANAGEMENT --------------------
+
+// Store stream key for session
+export const setStreamKey = wrapAsync(async (req, res) => {
+  const { sessionId, streamKey } = req.body;
+
+  if (!sessionId || !streamKey) {
+    return res.status(400).json({
+      success: false,
+      message: "Session ID and stream key required"
+    });
+  }
+
+  YouTubeStreamingService.setStreamKey(sessionId, streamKey);
+
+  res.status(200).json({
+    success: true,
+    message: "Stream key stored successfully"
+  });
+});
+
+// Get stored stream key for session
+export const getStreamKey = wrapAsync(async (req, res) => {
+  const { sessionId } = req.params;
+
+  if (!sessionId) {
+    return res.status(400).json({
+      success: false,
+      message: "Session ID required"
+    });
+  }
+
+  const streamKey = YouTubeStreamingService.getStreamKey(sessionId);
+
+  if (!streamKey) {
+    return res.status(404).json({
+      success: false,
+      message: "Stream key not found"
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: { streamKey }
+  });
+});
+
+// Update stream key for session
+export const updateStreamKey = wrapAsync(async (req, res) => {
+  const { sessionId, streamKey } = req.body;
+
+  if (!sessionId || !streamKey) {
+    return res.status(400).json({
+      success: false,
+      message: "Session ID and stream key required"
+    });
+  }
+
+  YouTubeStreamingService.setStreamKey(sessionId, streamKey);
+
+  res.status(200).json({
+    success: true,
+    message: "Stream key updated successfully"
+  });
+});
+
+// Remove stream key for session
+export const removeStreamKey = wrapAsync(async (req, res) => {
+  const { sessionId } = req.body;
+
+  if (!sessionId) {
+    return res.status(400).json({
+      success: false,
+      message: "Session ID required"
+    });
+  }
+
+  YouTubeStreamingService.removeStreamKey(sessionId);
+
+  res.status(200).json({
+    success: true,
+    message: "Stream key removed successfully"
+  });
+});

@@ -8,6 +8,7 @@ import {
   leaveSession,
   updateSessionStatus
 } from '../../api/session.api';
+import { startYouTubeStream, stopYouTubeStream } from '../../api/youtube.api';
 
 // Components
 import TopBar from '../studio/room/TopBar';
@@ -56,6 +57,7 @@ export const StudioRoomComplete = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [showYouTubeModal, setShowYouTubeModal] = useState(false);
   const [isGridStreaming, setIsGridStreaming] = useState(false);
+  const [isYouTubeStreaming, setIsYouTubeStreaming] = useState(false);
   const videoGridRef = useRef(null);
 
   const {
@@ -399,6 +401,8 @@ export const StudioRoomComplete = () => {
             isUploading={isUploading}
             isSidebarCollapsed={isSidebarCollapsed}
             onToggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            isYouTubeStreaming={isYouTubeStreaming}
+            onToggleYouTubeStream={handleToggleYouTubeStream}
           />
         </div>
 
@@ -435,8 +439,16 @@ export const StudioRoomComplete = () => {
         isOpen={showYouTubeModal}
         onClose={() => setShowYouTubeModal(false)}
         onStartStream={async (config) => {
-          setShowYouTubeModal(false);
-          setIsGridStreaming(true);
+          try {
+            await startYouTubeStream({
+              sessionId: session._id,
+              ...config
+            });
+            setShowYouTubeModal(false);
+            setIsYouTubeStreaming(true);
+          } catch (error) {
+            console.error('Failed to start YouTube stream:', error);
+          }
         }}
         session={session}
       />

@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import {
     Mic, MicOff, Video, VideoOff, Monitor, MonitorOff,
-    Square, Circle, Maximize, Minimize, MessageCircle, MoreHorizontal, Play, PhoneOff, Phone
+    Square, Circle, Maximize, Minimize, MessageCircle, MoreHorizontal, Play, PhoneOff, Phone, Youtube
 } from 'lucide-react';
 import { Button } from '../../ui/button';
 
@@ -29,7 +29,9 @@ const ControlBar = ({
     chunkCount,
     isUploading,
     isSidebarCollapsed,
-    onToggleSidebar
+    onToggleSidebar,
+    isYouTubeStreaming,
+    onToggleYouTubeStream
 }) => {
     return (
         <div className="bg-stone-900 border-t border-stone-800 px-6 py-4 shadow-2xl relative z-20 shrink-0">
@@ -103,6 +105,27 @@ const ControlBar = ({
                             {isRecording ? "Stop Recording" : "Start Checking"}
                         </span>
                     </div>
+
+                    {/* YouTube Streaming */}
+                    {isHost && (
+                        <div className="relative group">
+                            <Button
+                                onClick={onToggleYouTubeStream}
+                                variant="outline"
+                                size="icon"
+                                className={`w-12 h-12 rounded-full border-2 ${isYouTubeStreaming
+                                    ? "bg-red-950/30 border-red-500 text-red-500 animate-pulse hover:bg-red-900/40"
+                                    : "bg-stone-800 border-stone-700 text-white hover:bg-stone-700 hover:border-red-500/50 hover:text-red-400"
+                                    } transition-all duration-200`}
+                                disabled={!isJoined}
+                            >
+                                <Youtube className="w-4 h-4" />
+                            </Button>
+                            <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-stone-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity border border-stone-700 w-max">
+                                {isYouTubeStreaming ? "Stop YouTube Stream" : "Go Live on YouTube"}
+                            </span>
+                        </div>
+                    )}
 
                     {/* Status Indicators (Errors) */}
                     {(mediaError || recordingError) && (
