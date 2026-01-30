@@ -1,4 +1,4 @@
-import YouTubeStreamingService from "../services/youtube.service.js";
+import RTMPStreamingService from "../services/rtmpStreaming.service.js";
 import wrapAsync from "../utils/trycatchwrapper.js";
 
 // -------------------- START STREAM --------------------
@@ -7,6 +7,7 @@ export const startYouTubeStream = wrapAsync(async (req, res) => {
   const {
     sessionId,
     rtmpUrl,
+    platform,
     streamKey,
     title,
     videoConfig,
@@ -28,7 +29,7 @@ export const startYouTubeStream = wrapAsync(async (req, res) => {
     });
   }
 
-  const result = await YouTubeStreamingService.startStream({
+  const result = await RTMPStreamingService.startStream({
     sessionId,
     rtmpUrl,
     streamKey,
@@ -53,7 +54,7 @@ export const stopYouTubeStream = wrapAsync(async (req, res) => {
     });
   }
 
-  const result = await YouTubeStreamingService.stopStream(sessionId);
+  const result = await RTMPStreamingService.stopStream(sessionId);
   res.status(200).json(result);
 });
 
@@ -69,7 +70,7 @@ export const getStreamStatus = wrapAsync(async (req, res) => {
     });
   }
 
-  const status = YouTubeStreamingService.getStreamStatus(sessionId);
+  const status = RTMPStreamingService.getStreamStatus(sessionId);
 
   res.status(200).json({
     success: true,
@@ -90,7 +91,7 @@ export const handleStreamChunk = wrapAsync(async (req, res) => {
     });
   }
 
-  const result = await YouTubeStreamingService.processStreamChunk({
+  const result = await RTMPStreamingService.processStreamChunk({
     sessionId,
     chunkData: chunk.buffer,
     timestamp: parseInt(timestamp) || Date.now(),
@@ -113,7 +114,7 @@ export const handleAudioChunk = wrapAsync(async (req, res) => {
     });
   }
 
-  const result = await YouTubeStreamingService.processAudioChunk({
+  const result = await RTMPStreamingService.processAudioChunk({
     sessionId,
     chunkData: chunk.buffer
   });
@@ -124,7 +125,7 @@ export const handleAudioChunk = wrapAsync(async (req, res) => {
 // -------------------- ACTIVE STREAMS --------------------
 
 export const getActiveStreams = wrapAsync(async (req, res) => {
-  const streams = YouTubeStreamingService.getAllActiveStreams();
+  const streams = RTMPStreamingService.getAllActiveStreams();
 
   res.status(200).json({
     success: true,
@@ -147,7 +148,7 @@ export const getStreamHealth = wrapAsync(async (req, res) => {
     });
   }
 
-  const data = YouTubeStreamingService.getHealth(sessionId);
+  const data = RTMPStreamingService.getHealth(sessionId);
 
   res.status(200).json({
     success: true,
