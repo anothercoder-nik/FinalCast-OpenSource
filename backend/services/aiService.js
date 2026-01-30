@@ -62,6 +62,38 @@ Return exactly 3 items as JSON:
       id: Date.now() + index
     }));
   }
+
+  async generateSummaryFromTranscript(transcript) {
+    if (!process.env.GEMINI_API_KEY) {
+      return "Summary generation unavailable: API key not configured.";
+    }
+
+    if (!transcript || transcript.length === 0) {
+      return "No transcript available for summary.";
+    }
+
+    // Convert transcript array to text
+    const transcriptText = transcript.map(item => item.word).join(' ');
+
+    const prompt = `
+You are an expert at summarizing podcast episodes and video sessions.
+Based on the following transcript, generate a concise summary highlighting key topics, main points, and any notable insights.
+
+Transcript:
+"${transcriptText}"
+
+Provide a summary in 2-3 paragraphs, focusing on the most important content.
+`;
+
+    try {
+      const result = await this.model.generateContent(prompt);
+      const summary = result.response.text().trim();
+      return summary;
+    } catch (err) {
+      console.error('Error generating summary:', err);
+      return "Failed to generate summary.";
+    }
+  }
 }
 
 export default new AIService();

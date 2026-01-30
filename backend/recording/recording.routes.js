@@ -14,5 +14,6 @@ router.post('/upload-complete-video', upload.single('video'), controller.uploadF
 router.post('/merge-chunks', controller.mergeChunks);
 router.get('/session/:sessionId/videos', controller.getSessionRecordings);
 router.get('/recordings/:participantId', controller.getUserRecordings);
+router.get('/session/:sessionId/transcript', controller.getSessionTranscript);
 
 export default router;

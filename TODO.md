@@ -1,17 +1,19 @@
-# Live YouTube Streaming Integration TODO
+# TODO: AI-Generated Session Transcripts and Summaries
 
-## Frontend Changes
-- [x] Add "Go Live" button to ControlBar.jsx in studio UI
-- [x] Integrate YouTubeLiveModal with the button
-- [x] Handle YouTube stream status display (live indicator)
+## Backend Tasks
+- [x] Create `backend/models/transcript.model.js` to store transcripts and summaries linked to sessions.
+- [x] Extend `backend/services/aiService.js` with methods to generate summaries from transcripts using Gemini.
+- [x] Modify `backend/recording/services/recordingMerge.service.js` to extract audio from merged video and perform speech-to-text (using Google Cloud Speech-to-Text API).
+- [x] Update `backend/recording/recording.controller.js` to trigger transcript generation and summary creation after merge completion.
+- [x] Update `backend/services/email.service.js` to send emails with downloadable transcripts and summaries post-session.
+- [x] Add backend routes in `backend/routes/recording.routes.js` for fetching transcripts/summaries.
 
-## Backend Changes
-- [x] Add youtubeStreamId field to session.model.js
-- [x] Update streamHandler.js to broadcast YouTube stream status to participants
-- [x] Extend YouTube service for better error handling and status tracking
-- [x] Update YouTube controller to handle stream key management
+## Frontend Tasks
+- [x] Create a new frontend component `frontend/src/components/dashboard/SessionTranscripts.jsx` to display transcripts and summaries.
+- [x] Update `frontend/src/services/transcriptService.js` to fetch real transcript data from backend API.
 
-## Testing
-- [ ] Test the "Go Live" button functionality
-- [ ] Verify stream status broadcasting
-- [ ] Ensure proper cleanup on session end
+## Dependencies and Testing
+- [x] Install necessary dependencies (e.g., @google-cloud/speech for STT).
+- [ ] Test speech-to-text accuracy and AI summary generation.
+- [ ] Ensure email attachments work for transcripts.
+- [ ] Update frontend dashboard to integrate the new component.

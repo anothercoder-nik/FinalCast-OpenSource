@@ -284,6 +284,169 @@ Expires in ${expiresIn} minutes
     return { html, text };
   }
 
+  // -------------------- TRANSCRIPT AND SUMMARY --------------------
+
+  async sendTranscriptAndSummaryEmail(data) {
+    if (!this.transporter) {
+      throw new Error("Email service not configured");
+    }
+
+    const content = this.generateTranscriptEmail(data);
+
+    const mail = {
+      from: `"FinalCast" <${process.env.EMAIL_USER}>`,
+      to: data.email,
+      subject: `Transcript and Summary for "${data.sessionTitle}"`,
+      html: content.html,
+      text: content.text,
+      attachments: data.attachments || []
+    };
+
+    const info = await this.transporter.sendMail(mail);
+
+    return {
+      success: true,
+      messageId: info.messageId,
+      previewUrl: nodemailer.getTestMessageUrl(info)
+    };
+  }
+
+  // -------------------- TRANSCRIPT TEMPLATE --------------------
+
+  generateTranscriptEmail(transcriptData) {
+    const {
+      email,
+      sessionTitle,
+      transcript,
+      summary,
+      transcriptUrl,
+      summaryUrl
+    } = transcriptData;
+
+    const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinalCast Session Transcript</title>
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+.container {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 15px;
+  padding: 30px;
+  color: white;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.content {
+  background: white;
+  border-radius: 10px;
+  padding: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+.logo {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.subtitle {
+  font-size: 16px;
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+.session-info {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  border-left: 4px solid #667eea;
+}
+.summary-section {
+  background: #e8f4f8;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  border-left: 4px solid #17a2b8;
+}
+.download-button {
+  display: inline-block;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 15px 30px;
+  text-decoration: none;
+  border-radius: 25px;
+  font-weight: bold;
+  margin: 10px;
+}
+.footer {
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  color: #666;
+  font-size: 14px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">🎥 FinalCast</div>
+  <div class="subtitle">Session Transcript & Summary</div>
+</div>
+
+<div class="content">
+  <h2>Session Complete! 📋</h2>
+  <p>Your session "<strong>${sessionTitle}</strong>" has been processed successfully.</p>
+
+  <div class="session-info">
+    <h3>📝 AI-Generated Summary</h3>
+    <p>${summary}</p>
+  </div>
+
+  <div style="text-align:center">
+    <a href="${transcriptUrl}" class="download-button">📄 Download Transcript</a>
+    <a href="${summaryUrl}" class="download-button">📋 View Full Summary</a>
+  </div>
+
+  <p style="text-align:center; margin-top:20px;">
+    <small>Transcripts and summaries are also available in your dashboard.</small>
+  </p>
+</div>
+
+<div class="footer">
+  <p>This email was sent by FinalCast</p>
+</div>
+</body>
+</html>`;
+
+    const text = `
+FinalCast - Session Transcript & Summary
+
+Session: ${sessionTitle}
+
+AI-Generated Summary:
+${summary}
+
+Download Transcript: ${transcriptUrl}
+View Full Summary: ${summaryUrl}
+
+Transcripts and summaries are also available in your dashboard.
+`;
+
+    return { html, text };
+  }
+
   async testEmailService() {
     if (!this.transporter) {
       throw new Error("Email service not configured");
