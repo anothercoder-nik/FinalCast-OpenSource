@@ -13,7 +13,7 @@ export const attachuser = async (req, res, next) => {
         req.user = user
         next()
     } catch (error) {
-        console.log(error)
+        // Token invalid or expired, just proceed as unauthenticated
         next()
     }
 }

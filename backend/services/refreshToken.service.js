@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import memoryManager from './memoryManager.service.js';
+import { signToken } from '../utils/helper.js';
 
 // In-memory store for refresh tokens (use Redis in production)
 const refreshTokenStore = new Map();
@@ -13,11 +14,7 @@ const cleanupInterval = memoryManager.trackInterval(
 );
 
 export const generateTokenPair = (userId) => {
-  const accessToken = jwt.sign(
-    { id: userId, type: 'access' },
-    process.env.JWT_SECRET,
-    { expiresIn: '15m' } // Short-lived access token
-  );
+  const accessToken = signToken({ id: userId, type: 'access' });
 
   const refreshToken = crypto.randomBytes(32).toString('hex');
   const refreshTokenExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days

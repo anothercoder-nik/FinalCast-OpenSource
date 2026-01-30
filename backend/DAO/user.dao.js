@@ -2,7 +2,7 @@ import User from "../models/user.model.js";
 
 export const findUserByEmail = async (email) => {
   try {
-    return await User.findOne({ email});
+    return await User.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
   } catch (error) {
     console.error("Error finding user by email:", error);
     throw error;
@@ -10,7 +10,7 @@ export const findUserByEmail = async (email) => {
 };
 
 export const findUserByEmailByPassword = async (email) => {
-    return await User.findOne({email}).select('+password +twoFactorSecret')
+    return await User.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } }).select('+password +twoFactorSecret')
 }
 export const createUser = async (name, email, password) => {
     const newUser = new User({name, email, password})

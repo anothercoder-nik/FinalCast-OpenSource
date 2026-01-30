@@ -24,7 +24,8 @@ export const checkAuth = async ({ context }) => {
         return true;
 
     } catch (error) {
-        console.log("Authentication failed:", error);
+        // Authentication failed (user not logged in), redirecting to auth
+        // console.log("Authentication failed:", error);
 
         // Clear all auth-related data
         const { queryClient, store } = context;

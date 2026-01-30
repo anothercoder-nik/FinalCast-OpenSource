@@ -21,12 +21,28 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           let user = await User.findOne({ googleId: profile.id });
 
           if (!user) {
-            user = await User.create({
-              googleId: profile.id,
-              name: profile.displayName,
-              email: profile.emails?.[0]?.value,
-              avatar: profile.photos?.[0]?.value
-            });
+            // Check if user exists with same email (case-insensitive)
+            const email = profile.emails?.[0]?.value;
+            if (email) {
+               user = await User.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
+            }
+
+            if (user) {
+              // Link Google account to existing user
+              user.googleId = profile.id;
+              if (profile.photos?.[0]?.value && (!user.avatar || user.avatar.includes("gravatar.com"))) {
+                user.avatar = profile.photos[0].value;
+              }
+              await user.save();
+            } else {
+              // Create new user (enforce lowercase email)
+              user = await User.create({
+                googleId: profile.id,
+                name: profile.displayName,
+                email: email ? email.toLowerCase() : undefined,
+                avatar: profile.photos?.[0]?.value
+              });
+            }
           }
 
           return done(null, user);

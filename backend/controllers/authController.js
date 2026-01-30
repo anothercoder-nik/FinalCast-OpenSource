@@ -21,7 +21,7 @@ export const sendRegistrationOtp = wrapAsync(async (req, res) => {
     return res.status(400).json({ message: "Email is required" });
   }
 
-  const existingUser = await User.findOne({ email: email.toLowerCase() });
+  const existingUser = await User.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
   if (existingUser) {
     return res.status(400).json({ message: "Email already registered" });
   }
@@ -67,7 +67,7 @@ export const resendRegistrationOtp = wrapAsync(async (req, res) => {
     return res.status(400).json({ message: "OTP ID and email required" });
   }
 
-  const existingUser = await User.findOne({ email: email.toLowerCase() });
+  const existingUser = await User.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
   if (existingUser) {
     return res.status(400).json({ message: "Email already registered" });
   }
@@ -106,7 +106,7 @@ export const registerUser = wrapAsync(async (req, res) => {
     return res.status(400).json({ message: "Invalid email verification" });
   }
 
-  const { accessToken, refreshToken, user } = await registerUserService(name, email, password);
+  const { accessToken, refreshToken, user } = await registerUserService(name, email.toLowerCase(), password);
 
   registrationOTPService.deleteOTP(otpId);
 
@@ -125,7 +125,7 @@ export const loginUser = wrapAsync(async (req, res) => {
   const { email, password, twoFactorToken, backupCode, redirectTo } = req.body;
 
   const { accessToken, refreshToken, user, requires2FA } = await loginUserService(
-    email,
+    email.toLowerCase(),
     password,
     twoFactorToken,
     backupCode

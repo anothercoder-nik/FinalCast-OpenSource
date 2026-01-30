@@ -22,7 +22,8 @@ axiosInstance.interceptors.response.use(
                     console.error("Bad Request:", data);
                     break;
                 case 401:
-                    console.error("Unauthorized:", data);
+                    // 401 is expected when checking auth status if not logged in
+                    // console.warn("Unauthorized:", data); 
                     break;
                 case 403:
                     console.error("Forbidden:", data);

@@ -18,6 +18,13 @@ export default defineConfig({
     port: 5173,
     strictPort: false,
     cors: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
   // SPA fallback for production deployment
   build: {
