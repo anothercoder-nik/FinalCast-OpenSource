@@ -1,6 +1,9 @@
 import * as uploadService from './services/recordingUpload.service.js';
 import * as mergeService from './services/recordingMerge.service.js';
 import * as queryService from './services/recordingQuery.service.js';
+import Transcript from '../models/transcript.model.js';
+import emailService from '../services/email.service.js';
+import Session from '../models/session.model.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 

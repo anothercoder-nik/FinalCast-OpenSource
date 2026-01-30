@@ -3,6 +3,9 @@ import path from 'path';
 import cloudinary from '../infra/cloudinary.client.js';
 import ffmpeg from '../infra/ffmpeg.client.js';
 import { RecordingChunk, FinalRecording } from '../../models/recording.model.js';
+import speech from '@google-cloud/speech';
+import Transcript from '../../models/transcript.model.js';
+import aiService from '../../services/aiService.js';
 
 export const mergeChunksService = async ({ sessionId, participantId, role, baseDir }) => {
   const chunks = await RecordingChunk.find({ sessionId, participantId, role, processed: false })

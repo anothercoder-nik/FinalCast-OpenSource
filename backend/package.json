@@ -12,6 +12,7 @@
     "start": "node -r dotenv/config app.js "
   },
   "dependencies": {
+    "@google-cloud/speech": "^7.2.1",
     "@google/generative-ai": "^0.24.1",
     "aws-sdk": "^2.1691.0",
     "bcrypt": "^6.0.0",
