@@ -8,6 +8,8 @@ import {
   leaveSession,
   updateSessionStatus
 } from '../../api/session.api';
+import { startRTMPStream, stopRTMPStream } from '../../api/rtmp.api';
+import { toast } from 'sonner';
 
 // Components
 import TopBar from '../studio/room/TopBar';
@@ -260,12 +262,21 @@ export const StudioRoomComplete = () => {
     }
   };
 
-  const toggleLive = () => {
+  const toggleLive = async () => {
     if (isHost) {
       if (isGridStreaming) {
-        setIsGridStreaming(false);
+        try {
+          if (session?._id) {
+            await stopRTMPStream(session._id);
+            toast.success('Stream stopped');
+          }
+          setIsGridStreaming(false);
+        } catch (error) {
+          console.error('Failed to stop stream:', error);
+          toast.error('Failed to stop stream');
+        }
       } else {
-        setShowYouTubeModal(true);
+        setShowRTMPModal(true);
       }
     }
   };
@@ -435,9 +446,30 @@ export const StudioRoomComplete = () => {
         isOpen={showRTMPModal}
         onClose={() => setShowRTMPModal(false)}
         onStartStream={async (config) => {
-          setShowRTMPModal(false);
-          setIsGridStreaming(true);
-          // TODO: Call startRTMPStream API here with config
+          try {
+            if (!session?._id) {
+              toast.error('Session not found');
+              return;
+            }
+            
+            const streamData = {
+              sessionId: session._id,
+              platform: config.platform || 'youtube',
+              streamKey: config.streamKey,
+              rtmpUrl: config.rtmpUrl,
+              title: config.title || session.title,
+              hasVideoCapture: true,
+              inputMode: 'webm'
+            };
+
+            await startRTMPStream(streamData);
+            setShowRTMPModal(false);
+            setIsGridStreaming(true);
+            toast.success(`Started streaming to ${config.platform || 'YouTube'}!`);
+          } catch (error) {
+            console.error('Failed to start stream:', error);
+            toast.error(error.message || 'Failed to start stream');
+          }
         }}
       />
 

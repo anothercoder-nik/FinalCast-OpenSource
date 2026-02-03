@@ -9,7 +9,8 @@ export const startRTMPStream = async (config) => {
       height: 720,
       framerate: 30,
       videoBitrate: '2500k',
-      audioBitrate: '128k'
+      audioBitrate: '128k',
+      ...(config.videoConfig || {})
     }
   });
   return response.data;

@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { AlertCircle, RadioIcon, X, Youtube, Twitch, Facebook } from 'lucide-react';
+import { AlertCircle, RadioIcon, Youtube, Tv, Share2 } from 'lucide-react';
 
 const PLATFORM_CONFIGS = {
   youtube: {
@@ -15,14 +15,14 @@ const PLATFORM_CONFIGS = {
   },
   twitch: {
     label: 'Twitch',
-    icon: <Twitch className="w-6 h-6 text-purple-500" />,
+    icon: <Tv className="w-6 h-6 text-purple-500" />,
     rtmpUrl: process.env.TWITCH_RTMP_URL || 'rtmp://live.twitch.tv/app/',
     streamKeyPlaceholder: 'Enter your Twitch stream key',
     help: 'You can find your stream key in Twitch Dashboard → Stream',
   },
   facebook: {
     label: 'Facebook',
-    icon: <Facebook className="w-6 h-6 text-blue-500" />,
+    icon: <Share2 className="w-6 h-6 text-blue-500" />,
     rtmpUrl: process.env.FACEBOOK_RTMP_URL || 'rtmp://live-api-s.facebook.com:80/rtmp/',
     streamKeyPlaceholder: 'Enter your Facebook stream key',
     help: 'You can find your stream key in Facebook Live Producer',

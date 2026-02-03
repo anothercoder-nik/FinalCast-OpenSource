@@ -82,7 +82,51 @@ class RTMPStreamingService {
       ffmpeg.stdin.end();
       ffmpeg.kill('SIGINT');
       this.streams.delete(sessionId);
+      return { success: true, message: 'Stream stopped' };
     }
+    return { success: false, message: 'No active stream found' };
+  }
+
+  getStreamStatus(sessionId) {
+    const isActive = this.streams.has(sessionId);
+    return {
+      sessionId,
+      isStreaming: isActive,
+      status: isActive ? 'active' : 'inactive'
+    };
+  }
+
+  getAllActiveStreams() {
+    return Array.from(this.streams.keys()).map(sessionId => ({
+      sessionId,
+      status: 'active'
+    }));
+  }
+
+  getHealth(sessionId) {
+    const stream = this.streams.get(sessionId);
+    return {
+      isActive: !!stream,
+      sessionId
+    };
+  }
+
+  processStreamChunk({ sessionId, chunkData, timestamp, mimeType }) {
+    const stream = this.streams.get(sessionId);
+    if (!stream) {
+      throw new Error('No active stream for this session');
+    }
+    // Process video chunk (implementation depends on your needs)
+    return { success: true, timestamp };
+  }
+
+  processAudioChunk({ sessionId, chunkData }) {
+    const stream = this.streams.get(sessionId);
+    if (!stream) {
+      throw new Error('No active stream for this session');
+    }
+    // Process audio chunk (implementation depends on your needs)
+    return { success: true };
   }
 }
 

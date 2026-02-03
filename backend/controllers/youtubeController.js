@@ -15,14 +15,22 @@ export const startYouTubeStream = wrapAsync(async (req, res) => {
     inputMode
   } = req.body;
 
-  if (!sessionId || !rtmpUrl || !streamKey) {
+  if (!sessionId || !streamKey) {
     return res.status(400).json({
       success: false,
       message: "Missing required fields"
     });
   }
 
-  if (!rtmpUrl.startsWith("rtmp://")) {
+  // If platform is provided, use it; otherwise use rtmpUrl directly
+  if (platform && !['youtube', 'twitch', 'facebook'].includes(platform)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid platform. Must be youtube, twitch, or facebook"
+    });
+  }
+
+  if (rtmpUrl && !rtmpUrl.startsWith("rtmp://")) {
     return res.status(400).json({
       success: false,
       message: "Invalid RTMP URL"
@@ -31,7 +39,7 @@ export const startYouTubeStream = wrapAsync(async (req, res) => {
 
   const result = await RTMPStreamingService.startStream({
     sessionId,
-    rtmpUrl,
+    platform: platform || 'youtube',
     streamKey,
     title,
     videoConfig,
