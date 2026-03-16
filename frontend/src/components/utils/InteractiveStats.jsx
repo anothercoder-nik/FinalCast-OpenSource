@@ -44,7 +44,7 @@ const InteractiveStats = () => {
                 {stat.label}
               </div>
             </div>
-            
+
           ))}
         </div>
       </div>

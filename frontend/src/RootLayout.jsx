@@ -10,12 +10,15 @@ function RootLayout() {
   const router = useRouterState();
   const currentPath = router.location.pathname;
 
-  // Hide Navbar/Shapes on Studio Room and Editor pages
+  // Hide Navbar/Shapes on Studio Room, Editor, Landing, and Auth pages
   const isStudioOrEditor = currentPath.includes('/studio/') || currentPath.includes('/editor/');
+  const isLanding = currentPath === '/';
+  const isAuth = currentPath.startsWith('/auth');
+  const hideGlobalNav = isStudioOrEditor || isLanding || isAuth;
 
   return (
-    <div className={`min-h-screen bg-stone-950 text-white overflow-x-hidden relative ${isStudioOrEditor ? '' : 'pt-20'}`}>
-      {!isStudioOrEditor && (
+    <div className={`min-h-screen bg-stone-950 text-white overflow-x-hidden relative ${hideGlobalNav ? '' : 'pt-20'}`}>
+      {!hideGlobalNav && (
         <>
           <FloatingShapes />
           <Navbar />

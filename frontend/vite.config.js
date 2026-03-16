@@ -14,18 +14,22 @@ export default defineConfig({
     },
   },
   server: {
-    host: '0.0.0.0',
-    port: 5173,
-    strictPort: false,
-    cors: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-        secure: false,
-      },
+  host: '0.0.0.0',
+  port: 5173,
+  strictPort: false,
+  cors: true,
+  allowedHosts: [
+    'ecarinate-chris-unturgid.ngrok-free.dev'
+  ],
+  proxy: {
+    '/api': {
+      target: 'http://localhost:3000',
+      changeOrigin: true,
+      secure: false,
     },
   },
+},
+
   // SPA fallback for production deployment
   build: {
     rollupOptions: {

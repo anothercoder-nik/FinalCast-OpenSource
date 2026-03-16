@@ -1,5 +1,48 @@
-/* === Google Font Import === */
+/* === Fonts Import === */
 @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+
+@font-face {
+  font-family: 'Mluvka';
+  src: url('/fonts/Mluvka/Mluvka-Regular-BF65518ac8463f5.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Mluvka';
+  src: url('/fonts/Mluvka/Mluvka-Medium-BF65518ac864edb.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Mluvka';
+  src: url('/fonts/Mluvka/Mluvka-SemiBold-BF65518ac864155.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Mluvka';
+  src: url('/fonts/Mluvka/Mluvka-Bold-BF65518ac8cff8c.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Mluvka';
+  src: url('/fonts/Mluvka/Mluvka-ExtraBold-BF65518ac86bc69.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Mluvka';
+  src: url('/fonts/Mluvka/Mluvka-ExtraBold-BF65518ac86bc69.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+}
+
 
 /* === Tailwind Core === */
 @import "tailwindcss";
@@ -126,11 +169,17 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif; /*Apply globally */
+    font-family: 'Mluvka', 'Inter', sans-serif;
+    /*Apply globally */
   }
 
   /* Optional: Remove overrides that cancel fonts */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: inherit;
     font-weight: inherit;
   }
@@ -142,12 +191,15 @@
 
 /* Hide scrollbar for webkit browsers */
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari and Opera */
+  display: none;
+  /* Chrome, Safari and Opera */
 }
 
 /* Custom thin scrollbar styles */
@@ -173,4 +225,20 @@
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* === Landing Page Custom Animations === */
+@keyframes shimmer {
+  0% { transform: translateX(-150%) skewX(-20deg); }
+  100% { transform: translateX(250%) skewX(-20deg); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes progress {
+  from { width: 0%; }
+  to { width: 100%; }
 }
