@@ -4,24 +4,12 @@ import {
   sendBulkInvitations,
   testEmailService
 } from "../controllers/emailController.js";
-import { attachuser } from "../utils/attachUser.js";
+import { authenticateToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.use(attachuser);
-
-const requireAuth = (req, res, next) => {
-  if (!req.user) {
-    return res.status(401).json({
-      success: false,
-      message: "Authentication required"
-    });
-  }
-  next();
-};
-
 router.get("/test", testEmailService);
-router.post("/send-invitation", requireAuth, sendRoomInvitation);
-router.post("/send-bulk-invitations", requireAuth, sendBulkInvitations);
+router.post("/send-invitation", authenticateToken, sendRoomInvitation);
+router.post("/send-bulk-invitations", authenticateToken, sendBulkInvitations);
 
 export default router;
