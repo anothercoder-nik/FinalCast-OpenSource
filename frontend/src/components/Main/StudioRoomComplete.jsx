@@ -8,6 +8,8 @@ import {
   leaveSession,
   updateSessionStatus
 } from '../../api/session.api';
+import { startRTMPStream, stopRTMPStream } from '../../api/rtmp.api';
+import { toast } from 'sonner';
 
 // Components
 import TopBar from '../studio/room/TopBar';
@@ -16,7 +18,7 @@ import Sidebar from '../studio/room/Sidebar';
 import UploadStatus from '../studio/UploadStatus';
 import VideoGrid from './VideoGrid';
 import MediaPermissionDialog from '../ui/MediaPermissionDialog';
-import YouTubeModal from '../studio/YoutubeModal';
+import RTMPModal from '../studio/RTMPModal';
 
 // Hooks
 import { useWebRTC } from '../../hooks/useWebRTC';
@@ -54,7 +56,7 @@ export const StudioRoomComplete = () => {
   const [permissionAction, setPermissionAction] = useState(null); // 'start' or 'join'
   const [pinnedVideo, setPinnedVideo] = useState(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [showYouTubeModal, setShowYouTubeModal] = useState(false);
+  const [showRTMPModal, setShowRTMPModal] = useState(false);
   const [isGridStreaming, setIsGridStreaming] = useState(false);
   const videoGridRef = useRef(null);
 
@@ -260,12 +262,21 @@ export const StudioRoomComplete = () => {
     }
   };
 
-  const toggleLive = () => {
+  const toggleLive = async () => {
     if (isHost) {
       if (isGridStreaming) {
-        setIsGridStreaming(false);
+        try {
+          if (session?._id) {
+            await stopRTMPStream(session._id);
+            toast.success('Stream stopped');
+          }
+          setIsGridStreaming(false);
+        } catch (error) {
+          console.error('Failed to stop stream:', error);
+          toast.error('Failed to stop stream');
+        }
       } else {
-        setShowYouTubeModal(true);
+        setShowRTMPModal(true);
       }
     }
   };
@@ -431,14 +442,35 @@ export const StudioRoomComplete = () => {
         onPermissionDenied={handlePermissionDenied}
       />
 
-      <YouTubeModal
-        isOpen={showYouTubeModal}
-        onClose={() => setShowYouTubeModal(false)}
+      <RTMPModal
+        isOpen={showRTMPModal}
+        onClose={() => setShowRTMPModal(false)}
         onStartStream={async (config) => {
-          setShowYouTubeModal(false);
-          setIsGridStreaming(true);
+          try {
+            if (!session?._id) {
+              toast.error('Session not found');
+              return;
+            }
+            
+            const streamData = {
+              sessionId: session._id,
+              platform: config.platform || 'youtube',
+              streamKey: config.streamKey,
+              rtmpUrl: config.rtmpUrl,
+              title: config.title || session.title,
+              hasVideoCapture: true,
+              inputMode: 'webm'
+            };
+
+            await startRTMPStream(streamData);
+            setShowRTMPModal(false);
+            setIsGridStreaming(true);
+            toast.success(`Started streaming to ${config.platform || 'YouTube'}!`);
+          } catch (error) {
+            console.error('Failed to start stream:', error);
+            toast.error(error.message || 'Failed to start stream');
+          }
         }}
-        session={session}
       />
 
       <UploadStatus
